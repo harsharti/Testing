@@ -1,0 +1,13 @@
+background_color = #00ffff
+
+btn_number = 90
+
+btn_height = 50
+
+btn_width = 150
+
+btn_color = #ff00ff
+
+btn_pair = 1
+
+title = CRAFTLAND MAPS

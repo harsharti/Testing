@@ -1,27 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>काला बटन</title>
-  <style>
-    .black-button {
-      background-color: black;
-      color: white;
-      padding: 15px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      margin: 4px 2px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Buttons</title>
+    <style>
+        /* Flexbox container to center title and buttons */
+        body {
+            display: flex;
+            flex-direction: column; /* Stack title and buttons vertically */
+            justify-content: flex-start; /* Align items at the top */
+            align-items: center; /* Center horizontally */
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+            background-color: black; /* Default background color */
+            padding-top: 20px; /* Add space from the top */
+        }
+
+        /* Title styling */
+        #title {
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 20px; /* Space below the title */
+            padding: 20px;
+            border-radius: 50px; /* Rounded button like shape */
+            background-color: #00ff00; /* Light green background */
+            background-image: radial-gradient(circle, rgba(0, 255, 0, 0.6), rgba(0, 255, 0, 0.3)); /* Light green button shape */
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+        }
+
+        /* Button container setup */
+        #button-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Dynamic columns */
+            gap: 10px; /* Space between buttons */
+            justify-content: center; /* Center buttons horizontally */
+        }
+
+        /* Button styling */
+        button {
+            padding: 10px;
+            text-align: center;
+            border-radius: 10px; /* Make the corners rounded */
+            border: none; /* Remove border */
+            cursor: pointer; /* Add pointer cursor on hover */
+        }
+    </style>
 </head>
 <body>
 
-<button class="black-button">Harsh Raj<br>UID: 2284025692</button>
-<button class="black-button">SACSO<br>UID: 000000000</button>
-<button class="black-button">Rushkey<br>UID: 000000000</button>
-<button class="black-button">Prince Gamer<br>UID: 000000000</button>
+    <div id="title"></div>  <!-- Title will appear here -->
+    <div id="button-container"></div>  <!-- Buttons will appear here -->
 
+    <script>
+        // custom.txt file ko fetch karna
+        fetch('custom.txt')
+            .then(response => response.text())
+            .then(data => {
+                // custom.txt se title, btn_number, btn_height, btn_width, btn_color, btn_pair aur background_color read karo
+                const lines = data.split('\n');
+                
+                let btnNumber = 1;  // Default value
+                let btnHeight = 50; // Default value
+                let btnWidth = 150; // Default value
+                let btnColor = 'green'; // Default color set to green
+                let btnPair = 6; // Default value for btn_pair (number of buttons per row)
+                let backgroundColor = 'black'; // Default background color set to black
+                let pageTitle = 'Dynamic Buttons'; // Default page title
+
+                // Extract title
+                const titleLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'title');
+                if (titleLine) {
+                    pageTitle = titleLine.split('=')[1].trim();  // Set the title from custom.txt
+                }
+
+                // Extract btn_number
+                const btnNumberLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'btn_number');
+                if (btnNumberLine) {
+                    btnNumber = parseInt(btnNumberLine.split('=')[1].trim()) || 1;  // Use default if value is invalid
+                }
+
+                // Extract btn_height
+                const btnHeightLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'btn_height');
+                if (btnHeightLine) {
+                    btnHeight = parseInt(btnHeightLine.split('=')[1].trim()) || 50;  // Use default if value is invalid
+                }
+
+                // Extract btn_width
+                const btnWidthLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'btn_width');
+                if (btnWidthLine) {
+                    btnWidth = parseInt(btnWidthLine.split('=')[1].trim()) || 150;  // Use default if value is invalid
+                }
+
+                // Extract btn_color
+                const btnColorLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'btn_color');
+                if (btnColorLine) {
+                    const colorValue = btnColorLine.split('=')[1].trim();
+                    // Check if the color is a valid hexcode (starts with # followed by 6 characters)
+                    if(/^#[0-9A-Fa-f]{6}$/.test(colorValue)) {
+                        btnColor = colorValue; // Set color if it's a valid hexcode
+                    } else {
+                        btnColor = colorValue || 'green';  // If not hexcode, use it as color name or default to 'green'
+                    }
+                }
+
+                // Extract btn_pair
+                const btnPairLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'btn_pair');
+                if (btnPairLine) {
+                    btnPair = parseInt(btnPairLine.split('=')[1].trim()) || 6; // Default to 6 if invalid
+                }
+
+                // Extract background_color
+                const backgroundColorLine = lines.find(line => line.split('=')[0].trim().toLowerCase() === 'background_color');
+                if (backgroundColorLine) {
+                    backgroundColor = backgroundColorLine.split('=')[1].trim() || 'black';  // Default to 'black' if value is missing
+                }
+
+                // Set the background color of the page
+                document.body.style.backgroundColor = backgroundColor;
+
+                // Set the page title
+                document.getElementById('title').textContent = pageTitle;
+
+                const container = document.getElementById('button-container');
+                
+                // btnNumber ke hisaab se buttons generate karo aur height, width, color set karo
+                for (let i = 1; i <= btnNumber; i++) {
+                    const button = document.createElement('button');
+                    button.textContent = `Button ${i}`;
+                    button.style.height = `${btnHeight}px`;
+                    button.style.width = `${btnWidth}px`;
+                    button.style.backgroundColor = btnColor;  // Set the button color
+                    container.appendChild(button);
+                }
+
+                // CSS Grid ke liye dynamic rows and columns ko set karna
+                container.style.gridTemplateColumns = `repeat(${btnPair}, 1fr)`;  // Columns set according to btn_pair
+            })
+            .catch(error => {
+                console.error('Error reading custom.txt:', error);
+                // Default values set in case of error
+                const container = document.getElementById('button-container');
+                const button = document.createElement('button');
+                button.textContent = 'Button 1';
+                button.style.height = '50px';
+                button.style.width = '150px';
+                button.style.backgroundColor = 'green'; // Default color is green
+                button.style.borderRadius = '10px'; // Rounded corners by default
+                container.appendChild(button);
+            });
+    </script>
+    
 </body>
 </html>
+
+
